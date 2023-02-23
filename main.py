@@ -106,7 +106,6 @@ cogs = [
 
 
 async def setup_cogs(bot):
-    return  # TODO: Add cogs
     failed_cogs = []
     for cog in cogs:
         try:
