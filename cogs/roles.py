@@ -1,4 +1,5 @@
 import discord
+import functools
 from discord.ext import commands
 
 
@@ -22,6 +23,17 @@ class Roles(commands.Cog):
         }
         print(f"Loaded {self.__class__.__name__} cog.")
 
+    def channel_is_bot_commands(func):
+        @functools.wraps(func)
+        async def wrapper(self, ctx, *args, **kwargs):
+            if ctx.author == self.bot.creator:
+                pass
+            elif ctx.channel != self.bot.bot_channel:
+                await ctx.message.delete()
+                return await ctx.send(f"❌ {ctx.author.mention} Please use this command in {self.bot.bot_channel.mention}.", delete_after=10)
+            await func(self, ctx, *args, **kwargs)
+        return wrapper
+
     async def handle_roles(self, member, role, is_location=False):
         """Handles role assignment."""
         if role not in member.roles:
@@ -35,6 +47,7 @@ class Roles(commands.Cog):
         return "✅ Removed pronoun role for `{}`.\n"
 
     @commands.command(aliases=["pronouns"])
+    @channel_is_bot_commands
     async def set_pronouns(self, ctx, *, pronouns: str):
         """Sets your pronouns. Use again to remove. Currently supported pronouns: they, she, he, any. Please ask a mod if yours aren't available.
         Please note that combined pronouns (ex she/they) are not supported, please separate them. (ex she | they)
@@ -58,6 +71,7 @@ class Roles(commands.Cog):
         await ctx.send(message)
 
     @commands.command(aliases=["location"])
+    @channel_is_bot_commands
     async def set_location(self, ctx, *, location: str):
         """Set your location in Cap Hill. Use again to remove. Currently supported locations: Uptown, Capitol Hill, Cheesman Park, Other. See #resources for more info."""
         if location.lower() == "uptown":
