@@ -13,6 +13,7 @@ class Roles(commands.Cog):
             "they": 1078180553704091668,
             "she": 1078180522624307310,
             "he": 1078180484640669777,
+            "ee": 1079587998259216414,
             "any": 1078180610939568218,
 
             # Location
@@ -49,8 +50,12 @@ class Roles(commands.Cog):
     @commands.command(aliases=["pronouns"])
     @channel_is_bot_commands
     async def set_pronouns(self, ctx, *, pronouns: str):
-        """Sets your pronouns. Use again to remove. Currently supported pronouns: they, she, he, any. Please ask a mod if yours aren't available.
+        """Sets your pronouns. Use again to remove.
         Please note that combined pronouns (ex she/they) are not supported, please separate them. (ex she | they)
+
+        Currently supported pronouns: they, she, he, ee, any.
+        Please ask a mod if yours aren't available.
+
         Example: .set_pronouns they | she > adds the pronoun roles for they/them and she/her"""
         pronouns = pronouns.lower().replace(" ", "").split("|")
         message = ""
@@ -62,6 +67,8 @@ class Roles(commands.Cog):
                 message += (await self.handle_roles(ctx.author, ctx.guild.get_role(self.roles["she"]))).format("she/her")
             elif pronoun == "he" or pronoun == "him" or pronoun == "he/him":
                 message += (await self.handle_roles(ctx.author, ctx.guild.get_role(self.roles["he"]))).format("he/him")
+            elif pronoun == "ee" or pronoun == "em" or pronoun == "ee/em":
+                message += (await self.handle_roles(ctx.author, ctx.guild.get_role(self.roles["ee"]))).format("ee/em")
             elif pronoun == "any":
                 message += (await self.handle_roles(ctx.author, ctx.guild.get_role(self.roles["any"]))).format("any")
             else:
