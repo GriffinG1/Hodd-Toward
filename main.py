@@ -100,8 +100,9 @@ async def on_ready():
     bot.ready = True
 
 cogs = [
-    "cogs.events",
-    "cogs.mod",
+    # "cogs.events",
+    "cogs.misc",
+    # "cogs.mod",
     "cogs.roles"
 ]
 
@@ -156,8 +157,9 @@ async def reload(ctx, cog=None):
     if not cog:
         errors = []
         cog_dict = {
-            "Events": "events",
-            "Moderation": "mod",
+            # "Events": "events",
+            "Misc": "misc",
+            # "Moderation": "mod",
             "Roles": "roles"
         }
         loaded_cogs = bot.cogs.copy()
@@ -202,7 +204,7 @@ async def restart(ctx):
 async def about(ctx):
     """Information about the bot."""
     embed = discord.Embed()
-    embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in the Denver Capitol Hill Gays Discord server. It just works.\n"
+    embed.description = ("Python bot utilizing [discord.py](https://github.com/Rapptz/discord.py) for use in a mostly private server. It just works.\n"
                          "You can view the source code [here](https://github.com/GriffinG1/Hodd-Toward).\n"
                          f"Written and maintained by {bot.creator.mention}.")
     embed.set_author(name="GriffinG1", url='https://github.com/GriffinG1', icon_url='https://avatars0.githubusercontent.com/u/28538707')
