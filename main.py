@@ -14,8 +14,8 @@ if not os.path.exists("config.json"):
     shutil.copy("config.json.sample", "config.json")
     print("Please edit the config.json file and restart the bot.")
 
-with open("config.json") as f:
-    config = json.load(f)
+with open("config.json") as conf:
+    config = json.load(conf)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
@@ -53,7 +53,7 @@ async def on_command_error(ctx, error):
         await ctx.send("You are missing required arguments.")
         await ctx.send_help(ctx.command)
     elif isinstance(error, commands.NoPrivateMessage):
-        await ctx.send("You cannot use this command in DMs! Please go to <#1078220948622295120> to use this command.")
+        await ctx.send("You cannot use this command in DMs! Please go to <#1083193491036852265> to use this command.")
     elif isinstance(error, discord.ext.commands.errors.BadArgument):
         await ctx.send("A bad argument was provided, please try again.")
     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
@@ -88,11 +88,12 @@ async def on_error(event_method, *args, **kwargs):
 
 @bot.event
 async def on_ready():
-    bot.guild = bot.get_guild(config["guild_id"])
+    bot.guild = bot.get_guild(config["guild_data"]["guild_id"])
 
-    bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=1078386362828472491)
-    bot.bot_channel = discord.utils.get(bot.guild.channels, id=1078220948622295120)
-    bot.mods_role = discord.utils.get(bot.guild.roles, id=1078179931705577543)
+    bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["err_logs_channel"])
+    bot.bot_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["bot_channel"])
+    bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["mod_role_id"])
+
     bot.creator = await bot.fetch_user(177939404243992578)
 
     print(f"Started up on {bot.guild.name}!")

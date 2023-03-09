@@ -2,5 +2,10 @@
     "token": "",
     "prefix": [".", "!"],
     "is_beta": false,
-    "guild_id": 0
+    "guild_data": {
+        "guild_id": 0,
+        "mods_role": 0,
+        "err_logs_channel": 0,
+        "bot_channel": 0,
+    }
 }
