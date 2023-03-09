@@ -16,16 +16,16 @@ class Roles(commands.Cog):
             self.roles = json.load(file)
         print(f"Loaded {self.__class__.__name__} cog.")
 
-    async def handle_roles(self, member, role_name):
+    async def handle_roles(self, member, role_name, dict_scope):
         """Handles role assignment."""
-        if role_name not in self.roles["pronouns"].keys():
+        if role_name not in dict_scope.keys():
             return False
-        role = discord.utils.get(member.guild.roles, id=self.roles["pronouns"][role_name])
+        role = discord.utils.get(member.guild.roles, id=dict_scope[role_name])
         if role not in member.roles:
             await member.add_roles(role)
-            return "✅ Added pronoun role for `{}`.\n"
+            return "✅ Added role for `{}`.\n"
         await member.remove_roles(role)
-        return "✅ Removed pronoun role for `{}`.\n"
+        return "✅ Removed role for `{}`.\n"
 
     @commands.command(aliases=["pronouns"])
     async def set_pronouns(self, ctx, *, pronouns: str):
@@ -39,7 +39,7 @@ class Roles(commands.Cog):
         message = ""
         invalid_pronouns = []
         for pronoun in pronouns:
-            resp = await self.handle_roles(ctx.author, pronoun)
+            resp = await self.handle_roles(ctx.author, pronoun, self.roles["pronouns"])
             if not resp:
                 invalid_pronouns.append(pronoun)
                 continue
