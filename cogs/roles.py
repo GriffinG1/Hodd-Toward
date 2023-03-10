@@ -1,5 +1,4 @@
 import discord
-import os
 import json
 from discord.ext import commands
 
@@ -9,11 +8,6 @@ class Roles(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        if not os.path.exists("data/roles.json"):
-            with open("data/roles.json", "w") as file:
-                json.dump({}, file, indent=4)
-        with open("data/roles.json", "r") as file:
-            self.roles = json.load(file)
         print(f"Loaded {self.__class__.__name__} cog.")
 
     async def handle_roles(self, member, role_name, dict_scope):
@@ -39,7 +33,7 @@ class Roles(commands.Cog):
         message = ""
         invalid_pronouns = []
         for pronoun in pronouns:
-            resp = await self.handle_roles(ctx.author, pronoun, self.roles["pronouns"])
+            resp = await self.handle_roles(ctx.author, pronoun, self.bot.roles["pronouns"])
             if not resp:
                 invalid_pronouns.append(pronoun)
                 continue
@@ -55,11 +49,11 @@ class Roles(commands.Cog):
         """Adds a pronoun role to the list of available roles.
         Example: ?add_pronoun they @they/them"""
         pronoun = pronoun.lower().replace(" ", "")
-        if pronoun in self.roles["pronouns"].keys():
+        if pronoun in self.bot.roles["pronouns"].keys():
             return await ctx.send(f"❌ Pronoun `{pronoun}` is already in the list. Please use `.edit_pronoun` to edit it.")
-        self.roles["pronouns"][pronoun] = role.id
+        self.bot.roles["pronouns"][pronoun] = role.id
         with open("data/roles.json", "w") as file:
-            json.dump(self.roles, file, indent=4)
+            json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Added pronoun role for `{pronoun}`.")
 
     @commands.has_permissions(manage_roles=True)
@@ -68,11 +62,11 @@ class Roles(commands.Cog):
         """Edits a pronoun role in the list of available roles.
         Example: ?edit_pronoun they @they/them"""
         pronoun = pronoun.lower().replace(" ", "")
-        if pronoun not in self.roles.keys():
+        if pronoun not in self.bot.roles.keys():
             return await ctx.send(f"❌ Pronoun `{pronoun}` is not in the list. Please use `.add_pronoun` to add it.")
-        self.roles["pronouns"][pronoun] = new_role.id
+        self.bot.roles["pronouns"][pronoun] = new_role.id
         with open("data/roles.json", "w") as file:
-            json.dump(self.roles, file, indent=4)
+            json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Edited pronoun role for `{pronoun}`.")
 
     @commands.has_permissions(manage_roles=True)
@@ -81,17 +75,17 @@ class Roles(commands.Cog):
         """Removes a pronoun role from the list of available roles.
         Example: ?remove_pronoun they"""
         pronoun = pronoun.lower().replace(" ", "")
-        if pronoun not in self.roles["pronouns"].keys():
+        if pronoun not in self.bot.roles["pronouns"].keys():
             return await ctx.send(f"❌ Pronoun `{pronoun}` is not in the list.")
-        self.roles["pronouns"].pop(pronoun)
+        self.bot.roles["pronouns"].pop(pronoun)
         with open("data/roles.json", "w") as file:
-            json.dump(self.roles, file, indent=4)
+            json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Removed pronoun role for `{pronoun}`.")
 
     @commands.command(aliases=["listpronouns", "lp"])
     async def list_pronouns(self, ctx):
         """Lists all available pronoun roles."""
-        pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.roles["pronouns"].keys()])
+        pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
         await ctx.send(f"Available pronouns: {', '.join(pronouns)}")
 
 

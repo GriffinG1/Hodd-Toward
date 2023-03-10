@@ -36,6 +36,17 @@ bot = commands.Bot(command_prefix=prefix, description=description, intents=inten
 bot.ready = False
 bot.is_beta = config["is_beta"]
 
+roles_template = {
+    "server_stuff": {},
+    "pronouns": {}
+}
+
+if not os.path.exists("data/roles.json"):
+    with open("data/roles.json", "w") as file:
+        json.dump(roles_template, file, indent=4)
+with open("data/roles.json", "r") as file:
+    bot.roles = json.load(file)
+
 
 @bot.check
 async def globally_block_dms(ctx):
@@ -100,7 +111,7 @@ async def on_ready():
     bot.ready = True
 
 cogs = [
-    # "cogs.events",
+    "cogs.events",
     "cogs.misc",
     # "cogs.mod",
     "cogs.roles"
@@ -157,7 +168,7 @@ async def reload(ctx, cog=None):
     if not cog:
         errors = []
         cog_dict = {
-            # "Events": "events",
+            "Events": "events",
             "Misc": "misc",
             # "Moderation": "mod",
             "Roles": "roles"
