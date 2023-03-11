@@ -88,6 +88,14 @@ class Roles(commands.Cog):
         pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
         await ctx.send(f"Available pronouns: {', '.join(pronouns)}")
 
+    @commands.command(aliases=["colorado"])
+    async def set_colorado(self, ctx):
+        """Sets your Colorado role. Use again to remove."""
+        resp = await self.handle_roles(ctx.author, "colorado_role", self.bot.roles["server_stuff"])
+        if not resp:
+            return await ctx.send("❌ Colorado role not found. Please set it with `?set_colorado_role`.")
+        await ctx.send(resp.format("colorado"))
+
 
 async def setup(bot):
     await bot.add_cog(Roles(bot))

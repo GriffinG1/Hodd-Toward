@@ -27,6 +27,15 @@ class Misc(commands.Cog):
             json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Set join role to `{str(role)}`.")
 
+    @commands.has_permissions(manage_guild=True)
+    @commands.command(hidden=True)
+    async def set_colorado_role(self, ctx, role: discord.Role):
+        """Sets the role to be given to colorado peeps."""
+        self.bot.roles["server_stuff"]["colorado_role"] = role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Set Colorado role to `{str(role)}`.")
+
 
 async def setup(bot):
     await bot.add_cog(Misc(bot))
