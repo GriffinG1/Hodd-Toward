@@ -96,6 +96,60 @@ class Roles(commands.Cog):
             return await ctx.send("❌ Colorado role not found. Please set it with `?set_colorado_role`.")
         await ctx.send(resp.format("colorado"))
 
+    @commands.command(aliases=["animal"])
+    async def animal_role(self, ctx, animal: str):
+        """Sets your animal role. Use again to remove.
+        Example: ?animal_role kitty"""
+        resp = await self.handle_roles(ctx.author, animal.lower(), self.bot.roles["animals"])
+        if not resp:
+            return await ctx.send(f"❌ Animal role for `{animal}` not found. Please set it with `?add_animal_role`.")
+        await ctx.send(resp.format(animal))
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["addanimal"])
+    async def add_animal_role(self, ctx, animal: str, role: discord.Role):
+        """Adds an animal role to the list of available roles.
+        Example: ?add_animal_role kitty @kitty"""
+        animal = animal.lower()
+        if animal in self.bot.roles["animals"].keys():
+            return await ctx.send(f"❌ Animal `{animal}` is already in the list. Please use `.edit_animal_role` to edit it.")
+        self.bot.roles["animals"][animal] = role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Added animal role for `{animal}`.")
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["editanimal"])
+    async def edit_animal_role(self, ctx, animal: str, new_role: discord.Role):
+        """Edits an animal role in the list of available roles.
+        Example: ?edit_animal_role kitty @kitty"""
+        animal = animal.lower()
+        if animal not in self.bot.roles["animals"].keys():
+            return await ctx.send(f"❌ Animal `{animal}` is not in the list. Please use `.add_animal_role` to add it.")
+        self.bot.roles["animals"][animal] = new_role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Edited animal role for `{animal}`.")
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["removeanimal"])
+    async def remove_animal_role(self, ctx, animal: str):
+        """Removes an animal role from the list of available roles.
+        Example: ?remove_animal_role kitty"""
+        animal = animal.lower()
+        if animal not in self.bot.roles["animals"].keys():
+            return await ctx.send(f"❌ Animal `{animal}` is not in the list.")
+        self.bot.roles["animals"].pop(animal)
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Removed animal role for `{animal}`.")
+
+    @commands.command(aliases=["listanimals", "la"])
+    async def list_animals(self, ctx):
+        """Lists all available animal roles."""
+        animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
+        await ctx.send(f"Available animals: {', '.join(animals)}")
+
 
 async def setup(bot):
     await bot.add_cog(Roles(bot))
