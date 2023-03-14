@@ -2,6 +2,8 @@ import discord
 import json
 from discord.ext import commands
 
+# TODO: Rewrite into group commands with shared functions
+
 
 class Roles(commands.Cog):
     """Commands for managing roles."""
@@ -149,6 +151,60 @@ class Roles(commands.Cog):
         """Lists all available animal roles."""
         animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
         await ctx.send(f"Available animals: {', '.join(animals)}")
+
+    @commands.command(aliases=["miscrole"])
+    async def misc_role(self, ctx, role: str):
+        """Sets your misc role. Use again to remove.
+        Example: ?misc_role silly"""
+        resp = await self.handle_roles(ctx.author, role.lower(), self.bot.roles["misc"])
+        if not resp:
+            return await ctx.send(f"❌ Misc role for `{role}` not found. Please set it with `?add_misc_role`.")
+        await ctx.send(resp.format(role))
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["addmisc"])
+    async def add_misc_role(self, ctx, role: str, new_role: discord.Role):
+        """Adds a misc role to the list of available roles.
+        Example: ?add_misc_role silly @silly"""
+        role = role.lower()
+        if role in self.bot.roles["misc"].keys():
+            return await ctx.send(f"❌ Misc role `{role}` is already in the list. Please use `.edit_misc_role` to edit it.")
+        self.bot.roles["misc"][role] = new_role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Added misc role for `{role}`.")
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["editmisc"])
+    async def edit_misc_role(self, ctx, role: str, new_role: discord.Role):
+        """Edits a misc role in the list of available roles.
+        Example: ?edit_misc_role silly @silly"""
+        role = role.lower()
+        if role not in self.bot.roles["misc"].keys():
+            return await ctx.send(f"❌ Misc role `{role}` is not in the list. Please use `.add_misc_role` to add it.")
+        self.bot.roles["misc"][role] = new_role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Edited misc role for `{role}`.")
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["removemisc"])
+    async def remove_misc_role(self, ctx, role: str):
+        """Removes a misc role from the list of available roles.
+        Example: ?remove_misc_role silly"""
+        role = role.lower()
+        if role not in self.bot.roles["misc"].keys():
+            return await ctx.send(f"❌ Misc role `{role}` is not in the list.")
+        self.bot.roles["misc"].pop(role)
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Removed misc role for `{role}`.")
+
+    @commands.command(aliases=["listmisc", "lm"])
+    async def list_misc(self, ctx):
+        """Lists all available misc roles."""
+        misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
+        await ctx.send(f"Available misc roles: {', '.join(misc)}")
 
 
 async def setup(bot):

@@ -39,7 +39,8 @@ bot.is_beta = config["is_beta"]
 roles_template = {
     "server_stuff": {},
     "pronouns": {},
-    "animals": {}
+    "animals": {},
+    "misc": {}
 }
 
 if not os.path.exists("data/roles.json"):
