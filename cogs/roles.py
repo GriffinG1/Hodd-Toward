@@ -195,11 +195,11 @@ class Roles(commands.Cog):
         """Sends info on how to use the role commands."""
         await ctx.message.delete()
         embed = discord.Embed(title="Role Usage", colour=discord.Colour.purple())
-        embed.description = "You can use the below commands to add roles from yourself. Using the same command will remove them.\nPlease only use them in <#1066262751376326696> or <#1084259970318618654>."
-        embed.add_field(name="Pronouns", value=f"`{ctx.prefix}role pronouns pronoun1 | pronoun2 | ...` > adds pronoun1, pronoun2, etc. to your roles.\n"
-                        f"Example: `{ctx.prefix}role pronouns they | she | he`.\nPaired pronouns (ex `she/they`) are not supported.", inline=False)
-        embed.add_field(name="Animals", value=f"`{ctx.prefix}role animals animal1 | animal2 | ...` > adds animal1, animal2, etc. to your roles.\n"
-                        f"Example: `{ctx.prefix}role animals kitty | bunny`.", inline=False)
+        embed.description = "You can use the below commands to add roles from yourself. Using the same command will remove them.\nPlease only use them in <#1066262751376326696> or <#1084259970318618654>.\nIf you would like a role to be added, please ask in <#1084220504384229537>."
+        embed.add_field(name="Pronouns", value=f"`{ctx.prefix}role pronoun pronoun1 | pronoun2 | ...` > adds pronoun1, pronoun2, etc. to your roles.\n"
+                        f"Example: `{ctx.prefix}role pronoun they | she | he`.\nPaired pronouns (ex `she/they`) are not supported.", inline=False)
+        embed.add_field(name="Animals", value=f"`{ctx.prefix}role animal animal1 | animal2 | ...` > adds animal1, animal2, etc. to your roles.\n"
+                        f"Example: `{ctx.prefix}role animal kitty | bunny`.", inline=False)
         embed.add_field(name="Misc", value=f"`{ctx.prefix}role misc misc1 | misc2 | ...` > adds misc1, misc2, etc. to your roles.\n"
                         f"Example: `{ctx.prefix}role misc silly | touhou`.", inline=False)
         embed.add_field(name="Colorado", value=f"`{ctx.prefix}role colorado` > adds the colorado role to your roles.", inline=False)
