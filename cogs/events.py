@@ -6,6 +6,7 @@ class Events(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        print(f"Loaded {self.__class__.__name__} cog.")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
