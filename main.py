@@ -106,6 +106,8 @@ async def on_ready():
     bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["err_logs_channel"])
     bot.bot_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["bot_channel"])
     bot.mod_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["mod_logs_channel"])
+    bot.join_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["join_channel"])
+
     bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["mod_role_id"])
 
     bot.creator = await bot.fetch_user(177939404243992578)
