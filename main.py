@@ -40,7 +40,8 @@ roles_template = {
     "server_stuff": {},
     "pronouns": {},
     "animals": {},
-    "misc": {}
+    "misc": {},
+    "colours": {}
 }
 
 if not os.path.exists("data/roles.json"):

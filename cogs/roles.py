@@ -77,6 +77,16 @@ class Roles(commands.Cog):
             return await ctx.send(f"❌ Misc role named `{role}` not found.")
         await ctx.send(result.format(role))
 
+    @set_role.command(aliases=["color"])
+    async def colour(self, ctx, colour: str):
+        """Sets your colour role. Use the command again to remove it.
+        See <#1083198618837721129> for a list of available colours.
+        Example: ?role colour red > adds the red role."""
+        result = await self.handle_roles(ctx.author, colour.lower(), self.bot.roles["colours"])
+        if not result:
+            return await ctx.send(f"❌ Colour role for `{colour}` not found. Please ask a mod to add it.")
+        await ctx.send(result.format(colour))
+
     @commands.group()
     async def pronouns(self, ctx):
         """Commands for managing pronouns."""
@@ -190,6 +200,43 @@ class Roles(commands.Cog):
         misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
         await ctx.send(f"Available misc roles: {', '.join(misc)}")
 
+    @commands.group()
+    async def colours(self, ctx):
+        """Commands for managing colour roles."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @colours.command()
+    @commands.has_permissions(manage_roles=True)
+    async def add(self, ctx, colour: str, role: discord.Role):
+        """Adds to, or edits, a colour role.
+        Example: ?colours add blue @blue > sets the blue role to the @blue role."""
+        colour = colour.lower()
+        exists = (colour in self.bot.roles["colours"].keys())
+        self.bot.roles["colours"][colour] = role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} colour role for `{colour}`.")
+
+    @colours.command()
+    @commands.has_permissions(manage_roles=True)
+    async def remove(self, ctx, colour: str):
+        """Removes a colour role.
+        Example: ?colours remove blue > removes the blue role."""
+        colour = colour.lower()
+        if colour not in self.bot.roles["colours"].keys():
+            return await ctx.send(f"❌ Colour role for `{colour}` not found.")
+        del self.bot.roles["colours"][colour]
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Removed colour role for `{colour}`.")
+
+    @colours.command(name="list")
+    async def list_colours(self, ctx):
+        """Lists all available colour roles."""
+        colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
+        await ctx.send(f"Available colours: {', '.join(colours)}")
+
     @commands.command()
     async def role_usage(self, ctx):
         """Sends info on how to use the role commands."""
@@ -198,10 +245,12 @@ class Roles(commands.Cog):
         embed.description = "You can use the below commands to add roles from yourself. Using the same command will remove them.\nPlease only use them in <#1066262751376326696> or <#1084259970318618654>.\nIf you would like a role to be added, please ask in <#1084220504384229537>."
         embed.add_field(name="Pronouns", value=f"`{ctx.prefix}role pronoun pronoun1 | pronoun2 | ...` > adds pronoun1, pronoun2, etc. to your roles.\n"
                         f"Example: `{ctx.prefix}role pronoun they | she | he`.\nPaired pronouns (ex `she/they`) are not supported.", inline=False)
-        embed.add_field(name="Animals", value=f"`{ctx.prefix}role animal animal1 | animal2 | ...` > adds animal1, animal2, etc. to your roles.\n"
-                        f"Example: `{ctx.prefix}role animal kitty | bunny`.", inline=False)
-        embed.add_field(name="Misc", value=f"`{ctx.prefix}role misc misc1 | misc2 | ...` > adds misc1, misc2, etc. to your roles.\n"
-                        f"Example: `{ctx.prefix}role misc silly | touhou`.", inline=False)
+        embed.add_field(name="Animals", value=f"`{ctx.prefix}role animal animal` > adds animal to your roles.\n"
+                        f"Example: `{ctx.prefix}role animal kitty`.", inline=False)
+        embed.add_field(name="Misc", value=f"`{ctx.prefix}role misc misc` > adds misc to your roles.\n"
+                        f"Example: `{ctx.prefix}role misc silly`.", inline=False)
+        embed.add_field(name="colours", value=f"`{ctx.prefix}role colour colour` > adds colour to your roles.\n"
+                        f"Example: `{ctx.prefix}role colour blue`.", inline=False)
         embed.add_field(name="Colorado", value=f"`{ctx.prefix}role colorado` > adds the colorado role to your roles.", inline=False)
         await ctx.send(embed=embed)
 
@@ -214,9 +263,11 @@ class Roles(commands.Cog):
         pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
         animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
         misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
+        colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
         embed.add_field(name="Pronouns", value=', '.join(pronouns))
         embed.add_field(name="Animals", value=', '.join(animals))
         embed.add_field(name="Misc", value=', '.join(misc))
+        embed.add_field(name="Colours", value=', '.join(colours))
         await ctx.send(embed=embed)
 
 
