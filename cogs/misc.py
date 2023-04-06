@@ -36,6 +36,61 @@ class Misc(commands.Cog):
             json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Set Colorado role to `{str(role)}`.")
 
+    @commands.command(aliases=['ui', 'user'])
+    async def userinfo(self, ctx, user: discord.Member = None, depth=False):
+        """Pulls a user's info. Passing no member returns your own. depth is a bool that will specify account creation and join date, and account age"""
+        if not user:
+            user = ctx.author
+        embed = discord.Embed(colour=user.colour)
+        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.display_avatar))
+        if user.nick:
+            embed.add_field(name="Nickname", value=user.nick)
+        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.display_avatar)})")
+        status = str(user.status).capitalize()
+        if user.is_on_mobile():
+            status += " (Mobile)"
+        embed.add_field(name="Status", value=status)
+        if user.activity and not depth:
+            embed.add_field(name="Top Activity", value=f"`{user.activity}`")
+        if len(user.roles) > 1 and not depth:
+            embed.add_field(name="Highest Role", value=user.top_role)
+        embed.add_field(name="Created At", value=f"{discord.utils.format_dt(user.created_at)}")
+        embed.add_field(name="Joined At", value=f"{discord.utils.format_dt(user.joined_at)}")
+        acc_age_days = (discord.utils.utcnow() - user.created_at).days
+        acc_age_years = acc_age_days // 365
+        acc_age_months = (acc_age_days % 365) // 30
+        embed.add_field(name="Account Age", value=f"About {acc_age_years} Years, {acc_age_months} Months, {(acc_age_days % 365) % 30} Days")
+        if depth:
+            embed.add_field(name=u"\u200B", value=u"\u200B", inline=False)
+            if len(user.roles) > 1:
+                embed.add_field(name="Roles", value=f"`{'`, `'.join(role.name for role in user.roles[1:])}`")
+            if len(user.activities) > 0:
+                embed.add_field(name="Activities" if len(user.activities) > 1 else "Activity", value=f"`{'`, `'.join(str(activity.name) for activity in user.activities)}`", inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['fui'])
+    async def fetch_userinfo(self, ctx, user: discord.User):
+        """Pulls a discord.User instead of discord.Member. More limited than userinfo"""
+        embed = discord.Embed(colour=user.colour)
+        embed.set_author(name=f"User info for {user} ({user.id})", icon_url=str(user.display_avatar))
+        embed.add_field(name="Avatar Link", value=f"[Here]({str(user.display_avatar)})")
+        embed.add_field(name="Created At", value=f"{discord.utils.format_dt(user.created_at)}")
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['si', 'guild', 'gi', 'server', 'serverinfo'])
+    async def guildinfo(self, ctx, depth=False):
+        embed = discord.Embed()
+        embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon))
+        embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
+        embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
+        embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
+        if depth:
+            embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
+            since_creation = (discord.utils.utcnow() - ctx.guild.created_at).days
+            embed.add_field(name="Created At", value=f"{discord.utils.format_dt(ctx.guild.created_at)}\n({since_creation//365} years, {since_creation%365} days)")
+            embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
+        await ctx.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Misc(bot))
