@@ -37,6 +37,16 @@ class Events(commands.Cog):
         embed.add_field(name="Left At", value=discord.utils.format_dt(datetime.now(), style="F"), inline=False)
         await self.bot.mod_logs_channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        role = discord.utils.get(self.bot.guild.roles, id=self.bot.roles["server_stuff"]["join_role"])
+        if role in before.roles and role not in after.roles:
+            embed = discord.Embed(title="New Member Role Removed", colour=discord.Colour.blue())
+            embed.add_field(name="Member", value=f"{after.mention} | {after}", inline=False)
+            embed.add_field(name="Joined At", value=discord.utils.format_dt(after.joined_at, style="F"), inline=False)
+            embed.add_field(name="Role Removed At", value=discord.utils.format_dt(datetime.now(), style="F"), inline=False)
+            await self.bot.mod_logs_channel.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Events(bot))
