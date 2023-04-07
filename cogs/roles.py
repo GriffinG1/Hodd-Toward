@@ -87,160 +87,35 @@ class Roles(commands.Cog):
             return await ctx.send(f"❌ Colour role for `{colour}` not found. Please ask a mod to add it.")
         await ctx.send(result.format(colour))
 
-    @commands.group()
-    async def pronouns(self, ctx):
-        """Commands for managing pronouns."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
+    @set_role.command(name="list")
+    async def list_roles(self, ctx, category: str = None):
+        """Lists all roles in a category."""
+        if category is None:
+            embed = discord.Embed(title="All Toggleable Roles", colour=discord.Colour.purple())
+            embed.description = "The following roles are available to add to yourself."
+            pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
+            animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
+            misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
+            colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
+            embed.add_field(name="Pronouns", value=', '.join(pronouns))
+            embed.add_field(name="Animals", value=', '.join(animals))
+            embed.add_field(name="Misc", value=', '.join(misc))
+            embed.add_field(name="Colours", value=', '.join(colours))
+            return await ctx.send(embed=embed)
+        elif category.lower() in ["pronoun", "pronouns"]:
+            dict_scope = self.bot.roles["pronouns"]
+        elif category.lower() in ["animal", "animals"]:
+            dict_scope = self.bot.roles["animals"]
+        elif category.lower() in ["misc"]:
+            dict_scope = self.bot.roles["misc"]
+        elif category.lower() in ["colour", "colours"]:
+            dict_scope = self.bot.roles["colours"]
+        roles = [f"`{name.title()}`: {ctx.guild.get_role(role_id).mention}" for name, role_id in dict_scope.items()]
+        await ctx.send(embed=discord.Embed(title=f"Roles for {category.title()}", description='\n'.join(roles)))
 
-    @pronouns.command()
-    @commands.has_permissions(manage_roles=True)
-    async def add(self, ctx, pronoun: str, role: discord.Role):
-        """Adds to, or edits a role in, the list of available pronouns.
-        Example: ?pronouns add they @they/them > sets the they/them pronoun role to the @they/them role."""
-        pronoun = pronoun.lower().replace(" ", "")
-        exists = (pronoun in self.bot.roles["pronouns"].keys())
-        self.bot.roles["pronouns"][pronoun] = role.id
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} pronoun role for `{pronoun}`.")
-
-    @pronouns.command()
-    @commands.has_permissions(manage_roles=True)
-    async def remove(self, ctx, pronoun: str):
-        """Removes a pronoun from the list of available pronouns.
-        Example: ?pronouns remove they > removes the they/them pronoun role."""
-        pronoun = pronoun.lower().replace(" ", "")
-        if pronoun not in self.bot.roles["pronouns"].keys():
-            return await ctx.send(f"❌ Pronoun `{pronoun}` not found.")
-        del self.bot.roles["pronouns"][pronoun]
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ Removed pronoun role for `{pronoun}`.")
-
-    @pronouns.command(name="list")
-    async def list_pronouns(self, ctx):
-        """Lists all available pronoun roles.
-        Example: ?pronouns list > lists all available pronoun roles."""
-        pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
-        await ctx.send(f"Available pronouns: {', '.join(pronouns)}")
-
-    @commands.group()
-    async def animals(self, ctx):
-        """Commands for managing animal roles."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
-
-    @animals.command()
-    @commands.has_permissions(manage_roles=True)
-    async def add(self, ctx, animal: str, role: discord.Role):
-        """Adds to, or edits, an animal role.
-        Example: ?animals add kitty @kitty > sets the kitty role to the @kitty role."""
-        animal = animal.lower()
-        exists = (animal in self.bot.roles["animals"].keys())
-        self.bot.roles["animals"][animal] = role.id
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} animal role for `{animal}`.")
-
-    @animals.command()
-    @commands.has_permissions(manage_roles=True)
-    async def remove(self, ctx, animal: str):
-        """Removes an animal role.
-        Example: ?animals remove kitty > removes the kitty role."""
-        animal = animal.lower()
-        if animal not in self.bot.roles["animals"].keys():
-            return await ctx.send(f"❌ Animal role for `{animal}` not found.")
-        del self.bot.roles["animals"][animal]
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ Removed animal role for `{animal}`.")
-
-    @animals.command(name="list")
-    async def list_animals(self, ctx):
-        """Lists all available animal roles.
-        Example: ?animals list > lists all available animal roles."""
-        animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
-        await ctx.send(f"Available animals: {', '.join(animals)}")
-
-    @commands.group()
-    async def miscroles(self, ctx):
-        """Commands for managing misc roles."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
-
-    @miscroles.command()
-    @commands.has_permissions(manage_roles=True)
-    async def add(self, ctx, role: str, role_: discord.Role):
-        """Adds to, or edits, a misc role.
-        Example: ?miscroles add silly @silly > sets the silly role to the @silly role."""
-        role = role.lower()
-        exists = (role in self.bot.roles["misc"].keys())
-        self.bot.roles["misc"][role] = role_.id
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} misc role for `{role}`.")
-
-    @miscroles.command()
-    @commands.has_permissions(manage_roles=True)
-    async def remove(self, ctx, role: str):
-        """Removes a misc role.
-        Example: ?miscroles remove silly > removes the silly role."""
-        role = role.lower()
-        if role not in self.bot.roles["misc"].keys():
-            return await ctx.send(f"❌ Misc role for `{role}` not found.")
-        del self.bot.roles["misc"][role]
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ Removed misc role for `{role}`.")
-
-    @miscroles.command(name="list")
-    async def list_misc(self, ctx):
-        """Lists all available misc roles."""
-        misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
-        await ctx.send(f"Available misc roles: {', '.join(misc)}")
-
-    @commands.group()
-    async def colours(self, ctx):
-        """Commands for managing colour roles."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
-
-    @colours.command()
-    @commands.has_permissions(manage_roles=True)
-    async def add(self, ctx, colour: str, role: discord.Role):
-        """Adds to, or edits, a colour role.
-        Example: ?colours add blue @blue > sets the blue role to the @blue role."""
-        colour = colour.lower()
-        exists = (colour in self.bot.roles["colours"].keys())
-        self.bot.roles["colours"][colour] = role.id
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} colour role for `{colour}`.")
-
-    @colours.command()
-    @commands.has_permissions(manage_roles=True)
-    async def remove(self, ctx, colour: str):
-        """Removes a colour role.
-        Example: ?colours remove blue > removes the blue role."""
-        colour = colour.lower()
-        if colour not in self.bot.roles["colours"].keys():
-            return await ctx.send(f"❌ Colour role for `{colour}` not found.")
-        del self.bot.roles["colours"][colour]
-        with open("data/roles.json", "w") as file:
-            json.dump(self.bot.roles, file, indent=4)
-        await ctx.send(f"✅ Removed colour role for `{colour}`.")
-
-    @colours.command(name="list")
-    async def list_colours(self, ctx):
-        """Lists all available colour roles."""
-        colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
-        await ctx.send(f"Available colours: {', '.join(colours)}")
-
-    @commands.command()
-    async def role_usage(self, ctx):
+    @set_role.command(aliases=["help"])
+    async def role_help(self, ctx):
         """Sends info on how to use the role commands."""
-        await ctx.message.delete()
         embed = discord.Embed(title="Role Usage", colour=discord.Colour.purple())
         embed.description = "You can use the below commands to add roles from yourself. Using the same command will remove them.\nPlease only use them in <#1066262751376326696> or <#1084259970318618654>.\nIf you would like a role to be added, please ask in <#1084220504384229537>."
         embed.add_field(name="Pronouns", value=f"`{ctx.prefix}role pronoun pronoun1 | pronoun2 | ...` > adds pronoun1, pronoun2, etc. to your roles.\n"
@@ -254,21 +129,62 @@ class Roles(commands.Cog):
         embed.add_field(name="Colorado", value=f"`{ctx.prefix}role colorado` > adds the colorado role to your roles.", inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def list_all_roles(self, ctx):
-        """Lists all available roles."""
+    @commands.group()
+    @commands.has_permissions(manage_roles=True)
+    async def rolesedit(self, ctx):
+        """Commands for editing roles."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @rolesedit.command(aliases=["edit"])
+    async def add(self, ctx, category: str, name: str, role: discord.Role):
+        """Adds to, or edits, a role."""
+        if category.lower() in ["pronoun", "pronouns"]:
+            dict_scope = self.bot.roles["pronouns"]
+        elif category.lower() in ["animal", "animals"]:
+            dict_scope = self.bot.roles["animals"]
+        elif category.lower() in ["misc"]:
+            dict_scope = self.bot.roles["misc"]
+        elif category.lower() in ["colour", "colours"]:
+            dict_scope = self.bot.roles["colours"]
+        else:
+            return await ctx.send(f"❌ Category `{category}` not found.")
+        name = name.lower()
+        exists = (name in dict_scope.keys())
+        self.bot.roles[category][name] = role.id
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ {'Added' if not exists else 'Edited'} role for `{name}`.")
+
+    @rolesedit.command()
+    async def remove(self, ctx, category: str, name: str):
+        """Removes a role."""
+        if category.lower() in ["pronoun", "pronouns"]:
+            dict_scope = self.bot.roles["pronouns"]
+        elif category.lower() in ["animal", "animals"]:
+            dict_scope = self.bot.roles["animals"]
+        elif category.lower() in ["misc"]:
+            dict_scope = self.bot.roles["misc"]
+        elif category.lower() in ["colour", "colours"]:
+            dict_scope = self.bot.roles["colours"]
+        else:
+            return await ctx.send(f"❌ Category `{category}` not found.")
+        name = name.lower()
+        if name not in dict_scope.keys():
+            return await ctx.send(f"❌ Role for `{name}` not found.")
+        del self.bot.roles[category][name]
+        with open("data/roles.json", "w") as file:
+            json.dump(self.bot.roles, file, indent=4)
+        await ctx.send(f"✅ Removed role for `{name}`.")
+
+    @rolesedit.command(aliases=["sri"])
+    async def send_roles_info(self, ctx):
+        """Sends the roles info to the roles channel."""
         await ctx.message.delete()
-        embed = discord.Embed(title="All Toggleable Roles", colour=discord.Colour.purple())
-        embed.description = "The following roles are available to add to yourself."
-        pronouns = sorted([f"`{pronoun.title()}`" for pronoun in self.bot.roles["pronouns"].keys()])
-        animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
-        misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
-        colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
-        embed.add_field(name="Pronouns", value=', '.join(pronouns))
-        embed.add_field(name="Animals", value=', '.join(animals))
-        embed.add_field(name="Misc", value=', '.join(misc))
-        embed.add_field(name="Colours", value=', '.join(colours))
-        await ctx.send(embed=embed)
+        await ctx.channel.purge(limit=2, check=lambda message: message.author == self.bot.user)
+        await ctx.invoke(self.role_help)
+        await ctx.invoke(self.list_roles)
+
 
 
 async def setup(bot):
