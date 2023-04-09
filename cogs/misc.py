@@ -83,7 +83,7 @@ class Misc(commands.Cog):
         embed.set_author(name=f"Guild info for {ctx.guild.name} ({ctx.guild.id})", icon_url=str(ctx.guild.icon))
         embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
         embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
-        embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
+        embed.add_field(name="Member Count", value=f"{len([member for member in ctx.guild.members if not member.bot])} members, {len([member for member in ctx.guild.members if member.bot])} bots\n({ctx.guild.member_count} total)")
         embed.add_field(name="Channel Count", value=f"{len([channel for channel in ctx.guild.channels if not isinstance(channel, discord.CategoryChannel)])} channels in {len(ctx.guild.categories)} categories\n({len(ctx.guild.text_channels)} text, {len(ctx.guild.voice_channels)} voice)")
         embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
         embed.add_field(name="Role Count", value=str(len(ctx.guild.roles)))
