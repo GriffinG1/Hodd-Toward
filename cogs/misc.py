@@ -84,10 +84,13 @@ class Misc(commands.Cog):
         embed.add_field(name="Guild Owner", value=f"{ctx.guild.owner} ({ctx.guild.owner.mention})")
         embed.add_field(name="Highest Role", value=f"{ctx.guild.roles[-1].name} ({ctx.guild.roles[-1].id})")
         embed.add_field(name="Member Count", value=str(ctx.guild.member_count))
+        embed.add_field(name="Channel Count", value=f"{len([channel for channel in ctx.guild.channels if not isinstance(channel, discord.CategoryChannel)])} channels in {len(ctx.guild.categories)} categories\n({len(ctx.guild.text_channels)} text, {len(ctx.guild.voice_channels)} voice)")
+        embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
+        embed.add_field(name="Role Count", value=str(len(ctx.guild.roles)))
         if depth:
-            embed.add_field(name="Emoji Slots", value=f"{len(ctx.guild.emojis)}/{ctx.guild.emoji_limit} slots used")
             since_creation = (discord.utils.utcnow() - ctx.guild.created_at).days
-            embed.add_field(name="Created At", value=f"{discord.utils.format_dt(ctx.guild.created_at)}\n({since_creation//365} years, {since_creation%365} days)")
+            embed.add_field(name="Created At", value=f"{discord.utils.format_dt(ctx.guild.created_at)}")
+            embed.add_field(name="Server Age", value=f"{discord.utils.format_dt(ctx.guild.created_at, 'R')} ({since_creation} days ago)")
             embed.add_field(name="Total Boosts", value=f"{ctx.guild.premium_subscription_count} boosters (Current level: {ctx.guild.premium_tier})")
         await ctx.send(embed=embed)
 
