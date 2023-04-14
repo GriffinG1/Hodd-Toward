@@ -151,7 +151,7 @@ class Roles(commands.Cog):
             return await ctx.send(f"❌ Category `{category}` not found.")
         name = name.lower()
         exists = (name in dict_scope.keys())
-        self.bot.roles[category][name] = role.id
+        dict_scope[name] = role.id
         with open("data/roles.json", "w") as file:
             json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ {'Added' if not exists else 'Edited'} role for `{name}`.")
@@ -172,7 +172,7 @@ class Roles(commands.Cog):
         name = name.lower()
         if name not in dict_scope.keys():
             return await ctx.send(f"❌ Role for `{name}` not found.")
-        del self.bot.roles[category][name]
+        del dict_scope[name]
         with open("data/roles.json", "w") as file:
             json.dump(self.bot.roles, file, indent=4)
         await ctx.send(f"✅ Removed role for `{name}`.")
