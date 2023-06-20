@@ -5,6 +5,7 @@ import shutil
 import psutil
 import traceback
 import asyncio
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -113,7 +114,7 @@ async def on_ready():
 
     bot.creator = await bot.fetch_user(177939404243992578)
 
-    print(f"Started up on {bot.guild.name}!")
+    print(f"[{datetime.now().strftime('%m/%d/%Y %H:%M:%S')}] Started up on {bot.guild.name}!")
     bot.ready = True
 
 cogs = [
