@@ -139,6 +139,21 @@ class Moderation(commands.Cog):
         await member.timeout(diff - timedelta(seconds=1), reason=reason)  # Reduce diff by 1 second due to communication_disabled_until when it's *exactly* 28 days
         await ctx.send(f"Successfully timed out {member} until {end_str}!{cap_msg}")
 
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def say(self, ctx, channel: discord.TextChannel, *, message: str):
+        """Sends a given message to the given channel"""
+        try:
+            await channel.send(message)
+        except discord.Forbidden:
+            return await ctx.send("Failed to send that message due to a permissions issue!")
+        embed = discord.Embed(title="Message Sent")
+        embed.add_field(name="Author", value=f"{ctx.author} ({ctx.author.mention})")
+        embed.add_field(name="Channel", value=channel.mention)
+        embed.add_field(name="Message", value=message, inline=False)
+        await self.bot.mod_logs_channel.send(embed=embed)
+        await ctx.send(f"Message sent to {channel.mention}!")
+
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
