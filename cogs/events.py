@@ -54,7 +54,7 @@ class Events(commands.Cog):
 
         if isinstance(message.channel, discord.DMChannel):
             embed = discord.Embed(title="DM Received")
-            embed.add_field(name="Author", value=f"{message.author.mention} | {message.author}", inline=False)
+            embed.add_field(name="Author", value=f"{message.author} ({message.author.mention})")
             embed.add_field(name="Message", value=message.content, inline=False)
             await self.bot.dm_logs_channel.send(embed=embed)
 
@@ -69,8 +69,8 @@ class Events(commands.Cog):
                 embed.add_field(name="Replied To", value=f"[{'@' if len(message.mentions) > 0 and ref.author in message.mentions else ''}{ref.author}]({ref.jump_url}) ({ref.author.id})")
             if isinstance(message.channel, discord.threads.Thread):
                 embed.add_field(name="Thread Location", value=f"{message.channel.parent.mention} ({message.channel.parent.id})", inline=False)
-            embed.add_field(name="Author", value=f"{message.author.mention} | {message.author}")
-            embed.add_field(name="Channel", value=f"{message.channel.mention} | {message.channel}")
+            embed.add_field(name="Author", value=f"{message.author} ({message.author.mention})")
+            embed.add_field(name="Channel", value=f"{message.channel.mention}")
             embed.add_field(name="Message", value=message.content, inline=False)
             await self.bot.deleted_logs_channel.send(embed=embed)
 
