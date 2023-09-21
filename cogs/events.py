@@ -47,6 +47,17 @@ class Events(commands.Cog):
             embed.add_field(name="Role Removed At", value=discord.utils.format_dt(datetime.now(), style="F"), inline=False)
             await self.bot.mod_logs_channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        if isinstance(message.channel, discord.DMChannel):
+            embed = discord.Embed(title="DM Received")
+            embed.add_field(name="Author", value=f"{message.author.mention} | {message.author}", inline=False)
+            embed.add_field(name="Message", value=message.content, inline=False)
+            await self.bot.dm_logs_channel.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Events(bot))

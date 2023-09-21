@@ -109,6 +109,7 @@ async def on_ready():
     bot.bot_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["bot_channel"])
     bot.mod_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["mod_logs_channel"])
     bot.join_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["join_channel"])
+    bot.dm_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["dm_logs_channel"])
 
     bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["mod_role_id"])
 

@@ -8,6 +8,7 @@
         "err_logs_channel": 0,
         "bot_channel": 0,
         "mod_logs_channel": 0,
-        "join_channel": 0
+        "join_channel": 0,
+        "dm_logs_channel": 0
     }
 }

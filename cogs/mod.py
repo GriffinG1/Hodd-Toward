@@ -154,6 +154,21 @@ class Moderation(commands.Cog):
         await self.bot.mod_logs_channel.send(embed=embed)
         await ctx.send(f"Message sent to {channel.mention}!")
 
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def dm(self, ctx, target: discord.Member, *, message: str):
+        """Sends a given message to the given guild member"""
+        try:
+            await target.send(message)
+        except discord.Forbidden:
+            return await ctx.send(f"Failed to DM {target.mention}! Am I blocked?")
+        embed = discord.Embed(title="Message Sent")
+        embed.add_field(name="Author", value=f"{ctx.author} ({ctx.author.mention})")
+        embed.add_field(name="Target", value=target.mention)
+        embed.add_field(name="Message", value=message, inline=False)
+        await self.bot.mod_logs_channel.send(embed=embed)
+        await ctx.send(f"Message sent to {target.mention}!")
+
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
