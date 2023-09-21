@@ -105,15 +105,16 @@ async def on_error(event_method, *args, **kwargs):
 async def on_ready():
     bot.guild = bot.get_guild(config["guild_data"]["guild_id"])
 
-    bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["err_logs_channel"])
     bot.bot_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["bot_channel"])
-    bot.mod_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["mod_logs_channel"])
     bot.join_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["join_channel"])
-    bot.dm_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["dm_logs_channel"])
-    bot.deleted_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["deleted_logs_channel"])
-    bot.join_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["join_logs_channel"])
 
-    bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["mod_role_id"])
+    bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["err_logs"])
+    bot.mod_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["mod_logs"])
+    bot.dm_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["dm_logs"])
+    bot.deleted_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["deleted_logs"])
+    bot.join_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["join_logs"])
+
+    bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["roles"]["mod_role_id"])
 
     bot.creator = await bot.fetch_user(177939404243992578)
 
