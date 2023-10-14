@@ -1,5 +1,5 @@
 {
-    "token": "",
+    "token": "YOUR_BOT_TOKEN_HERE",
     "prefix": [".", "!"],
     "is_beta": false,
     "guild_data": {
@@ -7,14 +7,16 @@
         "roles": {
             "mod_role_id": 0
         },
-        "bot_channel": 0,
-        "join_channel": 0,
-        "log_channels": {
-            "err_logs": 0,
-            "mod_logs": 0,
-            "dm_logs": 0,
-            "deleted_logs": 0,
-            "join_logs": 0
+        "channels": {
+            "bot_channel": 0,
+            "join_channel": 0,
+            "log_channels": {
+                "err_logs": 0,
+                "mod_logs": 0,
+                "dm_logs": 0,
+                "deleted_logs": 0,
+                "join_logs": 0
+            }
         }
     }
 }

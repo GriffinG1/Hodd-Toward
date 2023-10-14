@@ -5,6 +5,7 @@ import shutil
 import psutil
 import traceback
 import asyncio
+import config_handler
 from datetime import datetime
 from discord.ext import commands
 
@@ -16,13 +17,13 @@ if not os.path.exists("config.json"):
     print("Please edit the config.json file and restart the bot.")
 
 with open("config.json") as conf:
-    config = json.load(conf)
+    config = config_handler.Config(json.load(conf))
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(dir_path)
 
-token = config["token"]
-prefix = config["prefix"]
+token = config.token
+prefix = config.prefix
 
 if token == "" or len(prefix) == 0:
     print("Please edit the config.json file and restart the bot.")
@@ -35,7 +36,7 @@ help_cmd = commands.DefaultHelpCommand(show_parameter_descriptions=False)
 bot = commands.Bot(command_prefix=prefix, description=description, intents=intents, help_command=help_cmd)
 
 bot.ready = False
-bot.is_beta = config["is_beta"]
+bot.is_beta = config.is_beta
 
 roles_template = {
     "server_stuff": {},
@@ -103,18 +104,17 @@ async def on_error(event_method, *args, **kwargs):
 
 @bot.event
 async def on_ready():
-    bot.guild = bot.get_guild(config["guild_data"]["guild_id"])
-
-    bot.bot_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["bot_channel"])
-    bot.join_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["join_channel"])
-
-    bot.err_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["err_logs"])
-    bot.mod_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["mod_logs"])
-    bot.dm_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["dm_logs"])
-    bot.deleted_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["deleted_logs"])
-    bot.join_logs_channel = discord.utils.get(bot.guild.channels, id=config["guild_data"]["log_channels"]["join_logs"])
-
-    bot.mods_role = discord.utils.get(bot.guild.roles, id=config["guild_data"]["roles"]["mod_role_id"])
+    for guild_data_attrib in config.guild_data.items():
+        if type(guild_data_attrib[1]) is dict:
+            for subattrib in guild_data_attrib[1].items():
+                if guild_data_attrib[0] == "channels":
+                    setattr(bot, subattrib[0], discord.utils.get(bot.guild.channels, id=subattrib[1]))
+                elif guild_data_attrib[0] == "roles":
+                    setattr(bot, subattrib[0], discord.utils.get(bot.guild.roles, id=subattrib[1]))
+        elif guild_data_attrib[0] == "guild_id":
+            bot.guild = bot.get_guild(guild_data_attrib[1])
+        else:
+            setattr(bot, guild_data_attrib[0], guild_data_attrib[1])  # catch anything else, and figure it out later
 
     bot.creator = await bot.fetch_user(177939404243992578)
 
