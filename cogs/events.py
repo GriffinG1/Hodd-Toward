@@ -21,7 +21,7 @@ class Events(commands.Cog):
 
         # Send welcome message
         message = f"Welcome to {self.bot.guild.name}, {member.mention}! Please read through <#1067004379904872448> and <#1083198618837721129>, and send a message here to introduce yourself!\n\nPlease note that you will not be able to access some channels until you have been an active member for a bit, as a safety measure."
-        await self.bot.join_channel.send(message)
+        await self.bot.joins_channel.send(message)
 
         # Log joins
         embed = discord.Embed(title="Member Joined", colour=discord.Colour.green())

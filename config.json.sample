@@ -5,11 +5,11 @@
     "guild_data": {
         "guild_id": 0,
         "roles": {
-            "mod_role_id": 0
+            "mods": 0
         },
         "channels": {
-            "bot_channel": 0,
-            "join_channel": 0,
+            "bots": 0,
+            "joins": 0,
             "log_channels": {
                 "err_logs": 0,
                 "mod_logs": 0,
