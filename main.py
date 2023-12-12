@@ -105,13 +105,10 @@ async def on_error(event_method, *args, **kwargs):
 def iterate_config_dict(parent_key, config_dict):
     for key, value in config_dict.items():
         if type(value) is dict:
-            print(f"dict: {key}, {value}", end="\n\n")
             iterate_config_dict(key, value)
         elif parent_key in ("channels", "log_channels"):
-            print(f"channel: {key}, {value}", end="\n\n")
             setattr(bot, key, discord.utils.get(bot.guild.channels, id=value))
         elif parent_key == "roles":
-            print(f"role: {key}, {value}", end="\n\n")
             setattr(bot, key, discord.utils.get(bot.guild.roles, id=value))
 
 
@@ -119,7 +116,6 @@ def iterate_config_dict(parent_key, config_dict):
 async def on_ready():
     for guild_data_attrib in config.guild_data.items():
         if type(guild_data_attrib[1]) is dict:
-            print(f"iterating dict: {guild_data_attrib[0]}, {guild_data_attrib[1]}", end="\n\n")
             iterate_config_dict(guild_data_attrib[0], guild_data_attrib[1])
         elif guild_data_attrib[0] == "guild_id":
             bot.guild = bot.get_guild(guild_data_attrib[1])

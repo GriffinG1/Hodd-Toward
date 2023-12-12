@@ -32,7 +32,7 @@ class Roles(commands.Cog):
     @set_role.command()
     async def colorado(self, ctx):
         """Sets your colorado role. Use the command again to remove it.
-        Example: ?role colorado > adds the colorado role."""
+        Example: .role colorado > adds the colorado role."""
         result = await self.handle_roles(ctx.author, "colorado_role", self.bot.roles["server_stuff"])
         if not result:
             return await ctx.send("❌ Colorado role not found. Please ask a mod if this is a mistake.")
@@ -43,7 +43,7 @@ class Roles(commands.Cog):
         """Sets your pronoun(s). Pass pronouns you already have to remove them. Input as a pipe (|) separated list.
         Please note that combined pronouns (ex she/they) are not supported, please separate them. (ex she | they).
         See <#1083198618837721129> for a list of available pronouns. Please ask if yours are not listed.
-        Example: ?role pronoun she | they > adds the pronoun roles for she/her and they/them."""
+        Example: .role pronoun she | they > adds the pronoun roles for she/her and they/them."""
         pronouns = pronouns.lower().replace(" ", "").split("|")
         message = ""
         invalid_pronouns = []
@@ -61,7 +61,7 @@ class Roles(commands.Cog):
     async def animal(self, ctx, animal: str):
         """Sets your animal role. Use the command again to remove it.
         See <#1083198618837721129> for a list of available animals. Please ask if yours is not listed.
-        Example: ?role animal kitty > adds the kitty role."""
+        Example: .role animal kitty > adds the kitty role."""
         result = await self.handle_roles(ctx.author, animal.lower(), self.bot.roles["animals"])
         if not result:
             return await ctx.send(f"❌ Animal role for `{animal}` not found. Please ask a mod to add it.")
@@ -71,7 +71,7 @@ class Roles(commands.Cog):
     async def misc(self, ctx, role: str):
         """Sets a misc role. Use the command again to remove it.
         See <#1083198618837721129> for a list of available misc roles.
-        Example: ?role misc silly > adds the silly role."""
+        Example: .role misc silly > adds the silly role."""
         result = await self.handle_roles(ctx.author, role.lower(), self.bot.roles["misc"])
         if not result:
             return await ctx.send(f"❌ Misc role named `{role}` not found.")
@@ -81,7 +81,7 @@ class Roles(commands.Cog):
     async def colour(self, ctx, colour: str):
         """Sets your colour role. Use the command again to remove it.
         See <#1083198618837721129> for a list of available colours.
-        Example: ?role colour red > adds the red role."""
+        Example: .role colour red > adds the red role."""
         result = await self.handle_roles(ctx.author, colour.lower(), self.bot.roles["colours"])
         if not result:
             return await ctx.send(f"❌ Colour role for `{colour}` not found. Please ask a mod to add it.")
