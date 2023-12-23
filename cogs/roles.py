@@ -87,6 +87,16 @@ class Roles(commands.Cog):
             return await ctx.send(f"❌ Colour role for `{colour}` not found. Please ask a mod to add it.")
         await ctx.send(result.format(colour))
 
+    @set_role.command(aliases=["mentions"])
+    async def mention(self, ctx, mention: str):
+        """Sets a mentionable role. Use the command again to remove it.
+        See <#1083198618837721129> for a list of available mentionable roles.
+        Example: .role mention vc > adds the vc notifs role."""
+        result = await self.handle_roles(ctx.author, mention.lower(), self.bot.roles["mentions"])
+        if not result:
+            return await ctx.send(f"❌ Mentionable role for `{mention}` not found. Please ask a mod to add it.")
+        await ctx.send(result.format(mention))
+
     @set_role.command(name="list")
     async def list_roles(self, ctx, category: str = None):
         """Lists all roles in a category."""
@@ -97,10 +107,12 @@ class Roles(commands.Cog):
             animals = sorted([f"`{animal.title()}`" for animal in self.bot.roles["animals"].keys()])
             misc = sorted([f"`{role.title()}`" for role in self.bot.roles["misc"].keys()])
             colours = sorted([f"`{colour.title()}`" for colour in self.bot.roles["colours"].keys()])
+            mentions = sorted([f"`{mention.title()}`" for mention in self.bot.roles["mentions"].keys()])
             embed.add_field(name="Pronouns", value=', '.join(pronouns))
             embed.add_field(name="Animals", value=', '.join(animals))
             embed.add_field(name="Misc", value=', '.join(misc))
             embed.add_field(name="Colours", value=', '.join(colours))
+            embed.add_field(name="Mentionables", value=', '.join(mentions))
             return await ctx.send(embed=embed)
         elif category.lower() in ["pronoun", "pronouns"]:
             dict_scope = self.bot.roles["pronouns"]
@@ -110,6 +122,8 @@ class Roles(commands.Cog):
             dict_scope = self.bot.roles["misc"]
         elif category.lower() in ["colour", "colours"]:
             dict_scope = self.bot.roles["colours"]
+        elif category.lower() in ["mention", "mentions"]:
+            dict_scope = self.bot.roles["mentions"]
         roles = [f"`{name.title()}`: {ctx.guild.get_role(role_id).mention}" for name, role_id in dict_scope.items()]
         await ctx.send(embed=discord.Embed(title=f"Roles for {category.title()}", description='\n'.join(roles)))
 
@@ -126,6 +140,8 @@ class Roles(commands.Cog):
                         f"Example: `{ctx.prefix}role misc silly`.", inline=False)
         embed.add_field(name="colours", value=f"`{ctx.prefix}role colour colour` > adds colour to your roles.\n"
                         f"Example: `{ctx.prefix}role colour blue`.", inline=False)
+        embed.add_field(name="Mentionables", value=f"`{ctx.prefix}role mention mention` > adds mention to your roles.\n"
+                        f"Example: `{ctx.prefix}role mention vc`.", inline=False)
         embed.add_field(name="Colorado", value=f"`{ctx.prefix}role colorado` > adds the colorado role to your roles.", inline=False)
         await ctx.send(embed=embed)
 
@@ -140,13 +156,35 @@ class Roles(commands.Cog):
     async def add(self, ctx, category: str, name: str, role: discord.Role):
         """Adds to, or edits, a role."""
         if category.lower() in ["pronoun", "pronouns"]:
-            dict_scope = self.bot.roles["pronouns"]
+            try:
+                dict_scope = self.bot.roles["pronouns"]
+            except KeyError:
+                self.bot.roles["pronouns"] = {}
+                dict_scope = self.bot.roles["pronouns"]
         elif category.lower() in ["animal", "animals"]:
-            dict_scope = self.bot.roles["animals"]
+            try:
+                dict_scope = self.bot.roles["animals"]
+            except KeyError:
+                self.bot.roles["animals"] = {}
+                dict_scope = self.bot.roles["animals"]
         elif category.lower() in ["misc"]:
-            dict_scope = self.bot.roles["misc"]
+            try:
+                dict_scope = self.bot.roles["misc"]
+            except KeyError:
+                self.bot.roles["misc"] = {}
+                dict_scope = self.bot.roles["misc"]
         elif category.lower() in ["colour", "colours"]:
-            dict_scope = self.bot.roles["colours"]
+            try:
+                dict_scope = self.bot.roles["colours"]
+            except KeyError:
+                self.bot.roles["colours"] = {}
+                dict_scope = self.bot.roles["colours"]
+        elif category.lower() in ["mention", "mentions"]:
+            try:
+                dict_scope = self.bot.roles["mentions"]
+            except KeyError:
+                self.bot.roles["mentions"] = {}
+                dict_scope = self.bot.roles["mentions"]
         else:
             return await ctx.send(f"❌ Category `{category}` not found.")
         name = name.lower()
@@ -160,13 +198,35 @@ class Roles(commands.Cog):
     async def remove(self, ctx, category: str, name: str):
         """Removes a role."""
         if category.lower() in ["pronoun", "pronouns"]:
-            dict_scope = self.bot.roles["pronouns"]
+            try:
+                dict_scope = self.bot.roles["pronouns"]
+            except KeyError:
+                self.bot.roles["pronouns"] = {}
+                dict_scope = self.bot.roles["pronouns"]
         elif category.lower() in ["animal", "animals"]:
-            dict_scope = self.bot.roles["animals"]
+            try:
+                dict_scope = self.bot.roles["animals"]
+            except KeyError:
+                self.bot.roles["animals"] = {}
+                dict_scope = self.bot.roles["animals"]
         elif category.lower() in ["misc"]:
-            dict_scope = self.bot.roles["misc"]
+            try:
+                dict_scope = self.bot.roles["misc"]
+            except KeyError:
+                self.bot.roles["misc"] = {}
+                dict_scope = self.bot.roles["misc"]
         elif category.lower() in ["colour", "colours"]:
-            dict_scope = self.bot.roles["colours"]
+            try:
+                dict_scope = self.bot.roles["colours"]
+            except KeyError:
+                self.bot.roles["colours"] = {}
+                dict_scope = self.bot.roles["colours"]
+        elif category.lower() in ["mention", "mentions"]:
+            try:
+                dict_scope = self.bot.roles["mentions"]
+            except KeyError:
+                self.bot.roles["mentions"] = {}
+                dict_scope = self.bot.roles["mentions"]
         else:
             return await ctx.send(f"❌ Category `{category}` not found.")
         name = name.lower()
@@ -184,6 +244,15 @@ class Roles(commands.Cog):
         await ctx.channel.purge(limit=2, check=lambda message: message.author == self.bot.user)
         await ctx.invoke(self.role_help)
         await ctx.invoke(self.list_roles)
+
+    @commands.command(aliases=["mrole", "pingrole"])
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def mention_role(self, ctx, mention: str):
+        """Pings a mentionable role. 30 second cooldown."""
+        if mention.lower() not in self.bot.roles["mentions"].keys():
+            return await ctx.send(f"❌ Mentionable role for `{mention}` not found.")
+        role = discord.utils.get(ctx.guild.roles, id=self.bot.roles["mentions"][mention.lower()])
+        await ctx.send(role.mention)
 
 
 async def setup(bot):
