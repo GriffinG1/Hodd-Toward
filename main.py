@@ -9,6 +9,8 @@ import config_handler
 from datetime import datetime
 from discord.ext import commands
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+os.chdir(dir_path)
 
 description = "It just works"
 
@@ -19,8 +21,6 @@ if not os.path.exists("config.json"):
 with open("config.json") as conf:
     config = config_handler.Config(json.load(conf))
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-os.chdir(dir_path)
 
 token = config.token
 prefix = config.prefix
@@ -216,7 +216,7 @@ async def ping(ctx):
     """Get time between HEARTBEAT and HEARTBEAT_ACK in ms."""
     ping = bot.latency * 1000
     ping = round(ping, 3)
-    await ctx.send(f"🏓 Pong! `{ping}ms`")
+    await ctx.send(f" Pong! `{ping}ms`")
 
 
 @bot.command(hidden=True)
